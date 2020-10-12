@@ -22,4 +22,14 @@ export class ClientProxyReclameAquiHost {
       }
     })
   }
+
+  getClientProxyComplainBackendInstance(): ClientProxy {
+    return ClientProxyFactory.create({
+      transport: Transport.RMQ,
+      options: {
+        urls: ['amqp://user:Z1wfdAr8TTKl@174.129.50.31:5672/reclameAquiHost'],
+        queue: 'complain-backend'
+      }
+    })
+  }
 }
