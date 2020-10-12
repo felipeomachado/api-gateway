@@ -1,13 +1,16 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ClientProxy, ClientProxyFactory, Transport } from "@nestjs/microservices";
 
 @Injectable()
 export class ClientProxyReclameAquiHost {
+  constructor(private configService: ConfigService){}
+
   getClientProxyCompanyBackendInstance(): ClientProxy {
     return ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://user:Z1wfdAr8TTKl@174.129.50.31:5672/reclameAquiHost'],
+        urls: [`amqp://${this.configService.get<string>('RABBITMQ_USER')}:${this.configService.get<string>('RABBITMQ_PASSWORD')}@${this.configService.get<string>('RABBITMQ_URL')}`],
         queue: 'company-backend'
       }
     })
@@ -17,7 +20,7 @@ export class ClientProxyReclameAquiHost {
     return ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://user:Z1wfdAr8TTKl@174.129.50.31:5672/reclameAquiHost'],
+        urls: [`amqp://${this.configService.get<string>('RABBITMQ_USER')}:${this.configService.get<string>('RABBITMQ_PASSWORD')}@${this.configService.get<string>('RABBITMQ_URL')}`],
         queue: 'locale-backend'
       }
     })
@@ -27,7 +30,7 @@ export class ClientProxyReclameAquiHost {
     return ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://user:Z1wfdAr8TTKl@174.129.50.31:5672/reclameAquiHost'],
+        urls: [`amqp://${this.configService.get<string>('RABBITMQ_USER')}:${this.configService.get<string>('RABBITMQ_PASSWORD')}@${this.configService.get<string>('RABBITMQ_URL')}`],
         queue: 'complain-backend'
       }
     })
