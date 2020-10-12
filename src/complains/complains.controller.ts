@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Logger, NotFoundException, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientProxyReclameAquiHost } from 'src/proxyrmq/client-proxy';
 import { CreateComplainDto } from './dtos/create-complain.dto';
@@ -31,8 +31,14 @@ export class ComplainsController {
   }
 
   @Get('/:_id')
-  findComplainById(@Param() params): Observable<any> {
-    return this.clientComplainBackend.send('find-complain-by-id', params._id);
+  async findComplainById(@Param() params): Promise<Observable<any>> {
+    const complainFound = await this.clientComplainBackend.send('find-complain-by-id', params._id).toPromise();
+
+    if(!complainFound) {
+      throw new NotFoundException('Complain not found');
+    }
+
+    return complainFound;
   }
 
   @Put('/:_id')

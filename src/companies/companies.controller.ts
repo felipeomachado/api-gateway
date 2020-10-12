@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Logger, NotFoundException, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientProxyReclameAquiHost } from 'src/proxyrmq/client-proxy';
 import { CreateCompanyDto } from './dtos/create-company.dto';
@@ -15,7 +15,13 @@ export class CompaniesController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createCompany(@Body() createCompanyDto: CreateCompanyDto) {
+  async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
+    const companyFound = await this.clientCompanyBackend.send('find-company-by-name', createCompanyDto.name).toPromise();
+
+    if(companyFound) {
+      throw new BadRequestException('Company already registered');
+    }
+    
     this.clientCompanyBackend.emit('create-company', createCompanyDto);
   }
 
@@ -25,13 +31,29 @@ export class CompaniesController {
   }
 
   @Get('/:_id')
-  findCompanyById(@Param() params): Observable<any> {
-    return this.clientCompanyBackend.send('find-company-by-id', params._id);
+  async findCompanyById(@Param() params): Promise<Observable<any>> {
+    const company = await this.clientCompanyBackend.send('find-company-by-id', params._id).toPromise();
+
+    if(!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return company;
   }
 
   @Put('/:_id')
   @UsePipes(ValidationPipe)
-  updateCompany(@Body() updateCompanyDto: UpdateCompanyDto, @Param('_id') _id: string) {
+  async updateCompany(@Body() updateCompanyDto: UpdateCompanyDto, @Param('_id') _id: string) {
+    const companyFoundById = await this.clientCompanyBackend.send('find-company-by-id', _id).toPromise();
+    const companyFoundByName = await this.clientCompanyBackend.send('find-company-by-name', updateCompanyDto.name).toPromise();
+
+    if(!companyFoundById) {
+      throw new NotFoundException('Company not found by Id');
+    }
+
+    if(companyFoundByName && (companyFoundByName._id.toString() != companyFoundById._id.toString())) {
+      throw new BadRequestException('This name is already being used by another company');
+    }
 
     this.clientCompanyBackend.emit('update-company', {id: _id, company: updateCompanyDto});
   }
