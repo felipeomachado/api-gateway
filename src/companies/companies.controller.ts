@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Logger, NotFoundException, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientProxyReclameAquiHost } from 'src/proxyrmq/client-proxy';
 import { CreateCompanyDto } from './dtos/create-company.dto';
@@ -6,8 +6,6 @@ import { UpdateCompanyDto } from './dtos/update-company.dto';
 
 @Controller('api/v1/companies')
 export class CompaniesController {
-
-  private logger = new Logger(CompaniesController.name);
 
   constructor(private clientProxyReclameAquiHost : ClientProxyReclameAquiHost){}
 

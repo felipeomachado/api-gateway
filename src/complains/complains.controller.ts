@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, NotFoundException, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientProxyReclameAquiHost } from 'src/proxyrmq/client-proxy';
 import { CreateComplainDto } from './dtos/create-complain.dto';
@@ -8,15 +8,27 @@ import { UpdateComplainDto } from './dtos/update-complain.dto';
 @Controller('api/v1/complains')
 export class ComplainsController {
 
-  private logger = new Logger(ComplainsController.name);
-
   constructor(private clientProxyReclameAquiHost : ClientProxyReclameAquiHost){}
 
   private clientComplainBackend = this.clientProxyReclameAquiHost.getClientProxyComplainBackendInstance();
+  private clientCompanyBackend = this.clientProxyReclameAquiHost.getClientProxyCompanyBackendInstance();
+  private clientLocaleBackend = this.clientProxyReclameAquiHost.getClientProxyLocaleBackendInstance();
 
   @Post()
   @UsePipes(ValidationPipe)
-  createComplain(@Body() createComplainDto : CreateComplainDto) {
+  async createComplain(@Body() createComplainDto : CreateComplainDto) {
+    const company = await this.clientCompanyBackend.send('find-company-by-id', createComplainDto.company._id).toPromise();
+
+    if(!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    const localeFound = await this.clientLocaleBackend.send('find-locale-by-id', createComplainDto.locale._id).toPromise();
+
+    if(!localeFound) {
+      throw new NotFoundException('Locale not found');
+    }
+
     this.clientComplainBackend.emit('create-complain', createComplainDto);
   }
 

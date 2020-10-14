@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Logger, NotFoundException, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientProxyReclameAquiHost } from 'src/proxyrmq/client-proxy';
 import { CreateLocaleDto } from './dtos/create-locale.dto';
@@ -7,8 +7,6 @@ import { UpdateLocaleDto } from './dtos/update-locale.dto';
 
 @Controller('api/v1/locales')
 export class LocalesController {
-  
-  private logger = new Logger(LocalesController.name);
 
   constructor(private clientProxyReclameAquiHost : ClientProxyReclameAquiHost){}
 
