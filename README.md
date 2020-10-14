@@ -14,6 +14,7 @@ The project is structured in three microservices responsible for processing info
 The microservices need only a instance of the NoSql MongoDB database to run, each.
 
 The api-gateway exposes all necessary endpoints. Ex:
+
 **Company Domain**
  - POST - /api/v1/companies
  - GET - /api/v1/companies
