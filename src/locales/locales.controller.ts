@@ -27,6 +27,7 @@ export class LocalesController {
   @Get()
   findAllLocales(): Observable<any> {
     return this.clientLocaleBackend.send('find-all-locales', '');
+    
   }
 
   @Get('/:_id')

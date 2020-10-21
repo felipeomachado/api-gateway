@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+      - "5672:5672"
+    command: yarn start
+    env_file:
+      - .env
